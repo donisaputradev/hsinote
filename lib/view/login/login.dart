@@ -19,7 +19,6 @@ class LoginPage extends StatelessWidget {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSize.s16),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               RegularText.title('Let’s Login'),

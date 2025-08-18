@@ -5,6 +5,7 @@ import 'package:hsinote/app/color.dart';
 import 'package:hsinote/app/size.dart';
 import 'package:hsinote/component/regular_text.dart';
 import 'package:hsinote/extension/size_extension.dart';
+import 'package:hsinote/service/user/local_service.dart';
 import 'package:hsinote/view/note/note.dart';
 
 part 'sections/empty_section.dart';
@@ -21,6 +22,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool isEmpty = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    checkUser();
+  }
+
+  void checkUser() async {
+    final user = await UserLocalService.user();
+
+    print(user?.name);
+  }
 
   @override
   Widget build(BuildContext context) {

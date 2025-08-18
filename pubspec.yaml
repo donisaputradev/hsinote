@@ -13,6 +13,11 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.2.0
   hive: ^2.2.3
+  ulid: ^2.0.1
+  flutter_bloc: ^9.1.1
+  form_validator: ^2.1.1
+  flutter_easyloading: ^3.0.5
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
