@@ -3,24 +3,11 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:hsinote/exception/cache_exception.dart';
 import 'package:hsinote/model/user_model.dart';
+import 'package:hsinote/service/user/user_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:ulid/ulid.dart';
 
-abstract class UserLocalService {
-  Future<UserModel> login({required String email, required String password});
-
-  Future<UserModel> register({
-    required String name,
-    required String email,
-    required String password,
-  });
-
-  Future<UserModel?> user();
-
-  Future<bool> logout();
-}
-
-class UserLocalServiceImpl implements UserLocalService {
+class UserLocalServiceImpl implements UserService {
   UserLocalServiceImpl();
 
   Future<Box> get _box async {
@@ -44,9 +31,9 @@ class UserLocalServiceImpl implements UserLocalService {
       if (data != null && data is String) {
         final user = UserModel.fromJson(jsonDecode(data));
 
-        if (user.password != password) {
-          throw CacheException('Incorrect email or password.');
-        }
+        // if (user.password != password) {
+        //   throw CacheException('Incorrect email or password.');
+        // }
 
         await box.put('authentication', email);
 
@@ -72,7 +59,7 @@ class UserLocalServiceImpl implements UserLocalService {
         id: ulid,
         name: name,
         email: email,
-        password: password,
+        // password: password,
       );
 
       final box = await _box;

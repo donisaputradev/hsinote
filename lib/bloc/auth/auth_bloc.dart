@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hsinote/enum/status_enum.dart';
 import 'package:hsinote/model/user_model.dart';
-import 'package:hsinote/service/user/local_service.dart';
+import 'package:hsinote/service/user/user_service.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -58,5 +58,5 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
   }
 
-  final UserLocalService service;
+  final UserService service;
 }

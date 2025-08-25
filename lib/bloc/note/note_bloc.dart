@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hsinote/enum/status_enum.dart';
 import 'package:hsinote/model/note_model.dart';
-import 'package:hsinote/service/note/local_service.dart';
+import 'package:hsinote/service/note/note_service.dart';
 
 part 'note_event.dart';
 part 'note_state.dart';
@@ -61,5 +61,5 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
     });
   }
 
-  final NoteLocalService service;
+  final NoteService service;
 }

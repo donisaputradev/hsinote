@@ -15,7 +15,7 @@ void main() {
       expect(user.id, 'u_1');
       expect(user.name, 'Doni');
       expect(user.email, 'doni@example.com');
-      expect(user.password, 'secret');
+      // expect(user.password, 'secret');
 
       final back = user.toJson();
       expect(back, json);

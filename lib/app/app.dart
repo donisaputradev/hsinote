@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hsinote/app/route.dart';
 import 'package:hsinote/bloc/bloc.dart';
-import 'package:hsinote/service/service.dart';
+import 'package:hsinote/service/note/api_service.dart';
+import 'package:hsinote/service/user/api_service.dart';
 import 'package:hsinote/view/login/login.dart';
 
 import 'theme.dart';
@@ -28,10 +29,10 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create: (context) => AuthBloc(UserLocalServiceImpl()),
+          create: (context) => AuthBloc(UserApiServiceImpl()),
         ),
         BlocProvider<NoteBloc>(
-          create: (context) => NoteBloc(NoteLocalServiceImpl()),
+          create: (context) => NoteBloc(NoteApiServiceImpl()),
         ),
       ],
       child: MaterialApp(

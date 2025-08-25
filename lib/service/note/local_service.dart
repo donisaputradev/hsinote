@@ -3,24 +3,11 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:hsinote/exception/cache_exception.dart';
 import 'package:hsinote/model/note_model.dart';
+import 'package:hsinote/service/note/note_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:ulid/ulid.dart';
 
-abstract class NoteLocalService {
-  Future<List<NoteModel>> notes();
-
-  Future<bool> create({required String title, required String content});
-
-  Future<bool> update({
-    required String id,
-    required String title,
-    required String content,
-  });
-
-  Future<bool> delete(String id);
-}
-
-class NoteLocalServiceImpl implements NoteLocalService {
+class NoteLocalServiceImpl implements NoteService {
   Future<Box> get _box async {
     final path = await getTemporaryDirectory();
 
