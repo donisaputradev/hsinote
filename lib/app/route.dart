@@ -7,7 +7,7 @@ import 'package:hsinote/view/register/register.dart';
 
 class AppRoute {
   static Route<dynamic> routes(RouteSettings settings) {
-    // final args = (settings.arguments as Map?) ?? {};
+    final args = (settings.arguments as Map?) ?? {};
     switch (settings.name) {
       case LoginPage.routeName:
         return MaterialPageRoute(
@@ -26,7 +26,7 @@ class AppRoute {
         );
       case NotePage.routeName:
         return CupertinoPageRoute(
-          builder: (_) => const NotePage(),
+          builder: (_) => NotePage(note: args['note']),
           settings: settings,
         );
       default:

@@ -1,14 +1,29 @@
 import 'dart:convert';
 
 import 'package:hive/hive.dart';
+import 'package:hsinote/exception/cache_exception.dart';
 import 'package:hsinote/model/user_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:ulid/ulid.dart';
 
-class UserLocalService {
-  UserLocalService._();
+abstract class UserLocalService {
+  Future<UserModel> login({required String email, required String password});
 
-  static Future<Box> get _box async {
+  Future<UserModel> register({
+    required String name,
+    required String email,
+    required String password,
+  });
+
+  Future<UserModel?> user();
+
+  Future<bool> logout();
+}
+
+class UserLocalServiceImpl implements UserLocalService {
+  UserLocalServiceImpl();
+
+  Future<Box> get _box async {
     final path = await getTemporaryDirectory();
 
     Hive.init(path.path);
@@ -16,7 +31,36 @@ class UserLocalService {
     return await Hive.openBox('user');
   }
 
-  static Future<UserModel> register({
+  @override
+  Future<UserModel> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final box = await _box;
+
+      final data = await box.get(email);
+
+      if (data != null && data is String) {
+        final user = UserModel.fromJson(jsonDecode(data));
+
+        if (user.password != password) {
+          throw CacheException('Incorrect email or password.');
+        }
+
+        await box.put('authentication', email);
+
+        return user;
+      } else {
+        throw CacheException('This email address is not registered.');
+      }
+    } catch (e) {
+      throw CacheException(e.toString());
+    }
+  }
+
+  @override
+  Future<UserModel> register({
     required String name,
     required String email,
     required String password,
@@ -33,17 +77,18 @@ class UserLocalService {
 
       final box = await _box;
 
-      await box.put(ulid, jsonEncode(data.toJson()));
+      await box.put(email, jsonEncode(data.toJson()));
 
-      await box.put('authentication', ulid);
+      await box.put('authentication', email);
 
       return data;
     } catch (e) {
-      throw Exception(e.toString());
+      throw CacheException(e.toString());
     }
   }
 
-  static Future<UserModel?> user() async {
+  @override
+  Future<UserModel?> user() async {
     try {
       final box = await _box;
 
@@ -56,12 +101,21 @@ class UserLocalService {
           return UserModel.fromJson(jsonDecode(data));
         }
 
-        return null;
+        throw CacheException('Please register or log in to your account.');
       } else {
-        return null;
+        throw CacheException('Please register or log in to your account.');
       }
     } catch (e) {
-      throw Exception(e.toString());
+      throw CacheException(e.toString());
     }
+  }
+
+  @override
+  Future<bool> logout() async {
+    final box = await _box;
+
+    await box.delete('authentication');
+
+    return true;
   }
 }

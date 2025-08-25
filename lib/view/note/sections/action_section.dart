@@ -1,7 +1,16 @@
 part of '../note.dart';
 
 class _ActionSection extends StatelessWidget {
-  const _ActionSection({super.key});
+  const _ActionSection({
+    super.key,
+    required this.content,
+    required this.id,
+    required this.title,
+  });
+
+  final String id;
+  final String title;
+  final String content;
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +42,23 @@ class _ActionSection extends StatelessWidget {
                 ),
               ],
             ),
-            buildTile(icon: Icons.check_rounded, label: 'Mark as Finished'),
+            buildTile(
+              icon: Icons.check_rounded,
+              label: 'Mark as Finished',
+              onTap: () {
+                context.read<NoteBloc>().add(
+                  UpdateNoteEvent(id: id, title: title, content: content),
+                );
+              },
+            ),
             Divider(),
             buildTile(
               icon: Icons.delete_rounded,
               label: 'Delete Note',
               color: AppColor.red,
+              onTap: () {
+                context.read<NoteBloc>().add(DeleteNoteEvent(id));
+              },
             ),
           ],
         ),
@@ -50,9 +70,10 @@ class _ActionSection extends StatelessWidget {
     required IconData icon,
     required String label,
     Color? color,
+    VoidCallback? onTap,
   }) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSize.s8,

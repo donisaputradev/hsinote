@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hsinote/app/asset.dart';
 import 'package:hsinote/app/color.dart';
 import 'package:hsinote/app/size.dart';
-import 'package:hsinote/component/regular_text.dart';
+import 'package:hsinote/bloc/bloc.dart';
+import 'package:hsinote/component/component.dart';
+import 'package:hsinote/enum/status_enum.dart';
 import 'package:hsinote/extension/size_extension.dart';
-import 'package:hsinote/service/user/local_service.dart';
+import 'package:hsinote/model/note_model.dart';
+import 'package:hsinote/view/login/login.dart';
 import 'package:hsinote/view/note/note.dart';
 
 part 'sections/empty_section.dart';
@@ -21,56 +25,74 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool isEmpty = true;
-
   @override
   void initState() {
     super.initState();
 
-    checkUser();
-  }
-
-  void checkUser() async {
-    final user = await UserLocalService.user();
-
-    print(user?.name);
+    context.read<NoteBloc>().add(GetNoteEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: GestureDetector(
-        onTap: () {
-          setState(() {
-            isEmpty = !isEmpty;
-          });
-        },
-        child: isEmpty
-            ? _EmptySection(key: widget.key)
-            : SafeArea(
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1,
-                  mainAxisSpacing: AppSize.s12,
-                  crossAxisSpacing: AppSize.s12,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSize.s16,
-                    vertical: AppSize.s20,
-                  ),
-                  children: [
-                    _ItemSection(key: widget.key),
-                    _ItemSection(key: widget.key),
-                    _ItemSection(key: widget.key),
-                  ],
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state.status == StatusEnum.initial) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            LoginPage.routeName,
+            (_) => false,
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              return Text(state.user?.name ?? '');
+            },
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                context.read<AuthBloc>().add(LogoutAuthEvent());
+              },
+              icon: Icon(Icons.exit_to_app_rounded),
+              color: AppColor.red,
+            ),
+          ],
+        ),
+        body: BlocBuilder<NoteBloc, NoteState>(
+          builder: (context, state) {
+            if (state.notes.isEmpty) {
+              return _EmptySection(key: widget.key);
+            }
+            return SafeArea(
+              child: GridView.count(
+                crossAxisCount: 2,
+                childAspectRatio: 1,
+                mainAxisSpacing: AppSize.s12,
+                crossAxisSpacing: AppSize.s12,
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppSize.s16,
+                  vertical: AppSize.s20,
                 ),
+                children: List.generate(state.notes.length, (index) {
+                  return _ItemSection(
+                    key: widget.key,
+                    note: state.notes[index],
+                  );
+                }),
               ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, NotePage.routeName);
-        },
-        child: Icon(Icons.add),
+            );
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, NotePage.routeName);
+          },
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }
