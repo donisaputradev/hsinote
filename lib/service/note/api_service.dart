@@ -13,7 +13,10 @@ class NoteApiServiceImpl implements NoteService {
     final dio = Dio()
       ..options = BaseOptions(
         baseUrl: 'https://hsinote.donisaputra.com/api',
-        headers: {'AUTHORIZATION': 'Bearer $token'},
+        headers: {
+          if (token != null) 'AUTHORIZATION': 'Bearer $token',
+          'Accept': 'application/json',
+        },
       );
 
     dio.interceptors.add(LogInterceptor(responseBody: true));
